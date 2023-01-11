@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -28,7 +28,16 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
 
   /**************************************************************************** */
-
+  app.get("/filteredimage",async (req: Request, res: Response) => {
+    const {image_url} = req.query;
+    if (!image_url){
+      res.status(400).send("plz enter the image url");
+    }
+    const image_filtered = await filterImageFromURL(image_url);
+    res.status(200).sendFile(image_filtered, () => {
+      deleteLocalFiles([image_filtered]);
+    });
+  });
   //! END @TODO1
   
   // Root Endpoint
